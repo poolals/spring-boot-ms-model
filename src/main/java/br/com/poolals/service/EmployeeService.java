@@ -1,6 +1,8 @@
 package br.com.poolals.service;
 
 import br.com.poolals.entity.Employee;
+import br.com.poolals.exception.ResourceNotFoundException;
+import br.com.poolals.model.request.EmployeeRequest;
 import br.com.poolals.model.response.EmployeeResponse;
 import br.com.poolals.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -34,4 +37,27 @@ public class EmployeeService {
         }
     }
 
+    public Optional<EmployeeResponse> findById(Long employeeId) {
+        return Optional.of(new EmployeeResponse());
+    }
+
+    public EmployeeResponse save(EmployeeRequest request) {
+        return new EmployeeResponse();
+    }
+
+    public EmployeeResponse update(Long employeeId, EmployeeRequest request) throws ResourceNotFoundException {
+        EmployeeResponse employeeResponse = findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+
+        employeeResponse.setEmail(request.getEmail());
+        employeeResponse.setLastName(request.getLastName());
+        employeeResponse.setFirstName(request.getFirstName());
+
+        return employeeResponse;
+    }
+
+    public void delete(Long employeeId) throws ResourceNotFoundException {
+        EmployeeResponse employeeResponse = findById(employeeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+    }
 }
