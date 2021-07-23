@@ -37,8 +37,9 @@ public class EmployeeService {
         }
     }
 
-    public Optional<EmployeeResponse> findById(Long employeeId) {
-        return Optional.of(new EmployeeResponse());
+    public EmployeeResponse findById(Long employeeId) throws ResourceNotFoundException {
+        return Optional.of(new EmployeeResponse())
+                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
     }
 
     public EmployeeResponse save(EmployeeRequest request) {
@@ -46,8 +47,7 @@ public class EmployeeService {
     }
 
     public EmployeeResponse update(Long employeeId, EmployeeRequest request) throws ResourceNotFoundException {
-        EmployeeResponse employeeResponse = findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+        EmployeeResponse employeeResponse = findById(employeeId);
 
         employeeResponse.setEmail(request.getEmail());
         employeeResponse.setLastName(request.getLastName());
@@ -57,7 +57,7 @@ public class EmployeeService {
     }
 
     public void delete(Long employeeId) throws ResourceNotFoundException {
-        EmployeeResponse employeeResponse = findById(employeeId)
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+        EmployeeResponse employeeResponse = findById(employeeId);
+        employeeRepository.delete(new Employee());
     }
 }
