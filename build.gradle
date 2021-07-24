@@ -20,8 +20,6 @@ dependencies {
 	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
 
-	implementation 'junit:junit:4.13.2'
-
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.4'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -31,10 +29,15 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok:1.18.20'
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
+	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
+	testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0'
 	testCompileOnly 'org.projectlombok:lombok:1.18.20'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 }
 
 test {
-	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
 }

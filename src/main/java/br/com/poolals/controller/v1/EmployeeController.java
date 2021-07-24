@@ -101,9 +101,10 @@ public class EmployeeController {
     }
 
     @ApiOperation(value = "Delete an employee")
-    @DeleteMapping(value = URI_EMPLOYEES_WITH_ID)
+    @DeleteMapping(value = "/employees/{id}")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Employee successfully deleted"),
+            @ApiResponse(code = 400, message = "Invalid request data"),
             @ApiResponse(code = 404, message = "Employee not found")
     })
     public ResponseEntity<EmployeeResponse> deleteEmployee(
