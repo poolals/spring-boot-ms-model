@@ -1,0 +1,53 @@
+logging:
+  level:
+    io:
+      swagger:
+        models:
+          parameters:
+            AbstractSerializableParameter: ERROR
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: ${ENV_LOG_REQUESTS:DEBUG}
+          servlet:
+            DispatcherServlet: INFO
+    root: ${ENV_LOG_LEVEL:INFO}
+  pattern:
+    console: '%5p [%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}] %d{yyyy-MM-dd HH:mm:ss} %highlight(%-5level) [%thread] %cyan(%class{36}.%M %L) - %msg%n'
+    file: '%5p [%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-}] %d{yyyy-MM-dd HH:mm:ss} %-5level %class{36}.%M %L - %msg%n'
+
+server:
+  port: ${ENV_PORT:9080}
+  servlet:
+    contextPath: ${ENV_CTX_PATH:/spring-boot-ms-model}
+
+spring:
+  http:
+    converters:
+      preferred-json-mapper: gson
+    encoding:
+      charset: UTF-8
+      enabled: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    password: ''
+    sql-script-encoding: UTF-8
+    url: jdbc:h2:mem:test;INIT=CREATE SCHEMA IF NOT EXISTS DBTEST
+    username: sa
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: h2
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        enable_lazy_load_no_trans: false
+    show-sql: true
+    open-in-view: false
+  profiles:
+    active: test

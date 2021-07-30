@@ -1,7 +1,7 @@
-package br.com.poolals.controller.v1;
+package br.com.poolals.controller;
 
 import br.com.poolals.SpringBootMsModelApplication;
-import br.com.poolals.exception.ResourceNotFoundException;
+import br.com.poolals.exception.EmployeeNotFoundException;
 import br.com.poolals.service.EmployeeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,29 +32,13 @@ public class EmployeeControllerTest {
     protected MockMvc mockMvc;
 
     @MockBean
-    private EmployeeService employeeService;
-
-//    @Test
-//    public void getAllEmployees() {
-//    }
-//
-//    @Test
-//    public void getEmployeeById() {
-//    }
-//
-//    @Test
-//    public void createEmployee() {
-//    }
-//
-//    @Test
-//    public void updateEmployee() {
-//    }
+    protected EmployeeService employeeService;
 
     @Test
     public void deleteEmployee_WhenPassedValidEmployeeId_ExpectedStatusNoContent() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .delete("/v1/employees/1")
-                .accept(MediaType.APPLICATION_JSON))
+                        .delete("/v1/employees/1")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
@@ -65,8 +48,8 @@ public class EmployeeControllerTest {
     @Test
     public void deleteEmployee_WhenPassedInvalidEmployeeId_ExpectedStatusNoContent() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .delete("/v1/employees/a")
-                .accept(MediaType.APPLICATION_JSON))
+                        .delete("/v1/employees/a")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
@@ -75,11 +58,11 @@ public class EmployeeControllerTest {
 
     @Test
     public void deleteEmployee_WhenPassedValidEmployeeIdAndEmployeeNotFound_ExpectedStatusNotFound() throws Exception {
-        doThrow(ResourceNotFoundException.class).when(employeeService).delete(anyLong());
+        doThrow(EmployeeNotFoundException.class).when(employeeService).delete(anyLong());
 
         mockMvc.perform(MockMvcRequestBuilders
-                .delete("/v1/employees/1")
-                .accept(MediaType.APPLICATION_JSON))
+                        .delete("/v1/employees/1")
+                        .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 

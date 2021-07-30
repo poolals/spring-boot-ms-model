@@ -3,13 +3,17 @@ package br.com.poolals.model.request;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder(builderClassName = "EmployeeRequestBuilder")
 @ApiModel(value = "EmployeeRequest")
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
 public class EmployeeRequest {
 
     @ApiModelProperty(name = "firstName", notes = "Employee First Name")

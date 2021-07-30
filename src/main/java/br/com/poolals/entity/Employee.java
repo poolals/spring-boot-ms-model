@@ -33,7 +33,7 @@ public class Employee {
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name="email", nullable=false, length=200)
+    @Column(name = "email", nullable = false, length = 200)
     private String email;
 
 }

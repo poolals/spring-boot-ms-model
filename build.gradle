@@ -1,7 +1,19 @@
+buildscript {
+    ext {
+        spring_boot_version = '2.5.2'
+        springfox_version = '2.9.2'
+        lombok_version = '1.18.20'
+        junit_version = '4.13.2'
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${spring_boot_version}")
+    }
+}
+
 plugins {
-	id 'org.springframework.boot' version '2.5.2'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version "${spring_boot_version}"
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
 }
 
 group = 'br.com.poolals'
@@ -9,37 +21,29 @@ version = '1.0.0-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: "${spring_boot_version}"
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${spring_boot_version}"
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${spring_boot_version}"
+    implementation group: 'io.springfox', name: 'springfox-swagger2', version: "${springfox_version}"
+    implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: "${springfox_version}"
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.4'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
 
-	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: "${lombok_version}"
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: "${lombok_version}"
 
-	implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
-	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+    runtimeOnly 'com.h2database:h2'
 
-	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.4'
-	implementation group: 'org.mapstruct', name: 'mapstruct', version: '1.4.2.Final'
-
-	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
-
-	compileOnly 'org.projectlombok:lombok:1.18.20'
-	annotationProcessor 'org.projectlombok:lombok:1.18.20'
-
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.11.2'
-	testImplementation group: 'junit', name: 'junit', version: '4.13.2'
-	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.7.0'
-	testCompileOnly 'org.projectlombok:lombok:1.18.20'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${spring_boot_version}"
+    testImplementation group: 'junit', name: 'junit', version: "${junit_version}"
 }
 
 test {
-	testLogging {
-		events "passed", "skipped", "failed"
-	}
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
