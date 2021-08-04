@@ -1,10 +1,5 @@
-package br.com.poolals.controller;
+package br.com.poolals.employee;
 
-import br.com.poolals.exception.EmployeeNotFoundException;
-import br.com.poolals.model.request.EmployeeRequest;
-import br.com.poolals.model.request.EmployeeRequestPageable;
-import br.com.poolals.model.response.EmployeeResponse;
-import br.com.poolals.service.EmployeeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -100,7 +95,7 @@ public class EmployeeController {
     }
 
     @ApiOperation(value = "Delete an employee")
-    @DeleteMapping(value = "/employees/{id}")
+    @DeleteMapping(value = URI_EMPLOYEES_WITH_ID)
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Employee successfully deleted"),
             @ApiResponse(code = 400, message = "Invalid request data"),

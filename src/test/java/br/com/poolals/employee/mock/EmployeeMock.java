@@ -1,7 +1,7 @@
-package br.com.poolals.mock;
+package br.com.poolals.employee.mock;
 
 
-import br.com.poolals.entity.Employee;
+import br.com.poolals.employee.Employee;
 
 public final class EmployeeMock {
 

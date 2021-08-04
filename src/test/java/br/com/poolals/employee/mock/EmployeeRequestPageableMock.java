@@ -1,8 +1,8 @@
-package br.com.poolals.mock;
+package br.com.poolals.employee.mock;
 
 import br.com.poolals.enums.SortDirection;
 import br.com.poolals.enums.SortField;
-import br.com.poolals.model.request.EmployeeRequestPageable;
+import br.com.poolals.employee.EmployeeRequestPageable;
 
 public class EmployeeRequestPageableMock {
 

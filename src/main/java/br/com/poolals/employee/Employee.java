@@ -1,4 +1,4 @@
-package br.com.poolals.entity;
+package br.com.poolals.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

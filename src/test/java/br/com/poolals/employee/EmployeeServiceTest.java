@@ -1,16 +1,9 @@
-package br.com.poolals.service;
+package br.com.poolals.employee;
 
 
-import br.com.poolals.entity.Employee;
-import br.com.poolals.exception.EmployeeAlreadyExistException;
-import br.com.poolals.exception.EmployeeNotFoundException;
-import br.com.poolals.mock.EmployeeMock;
-import br.com.poolals.mock.EmployeeRequestMock;
-import br.com.poolals.mock.EmployeeRequestPageableMock;
-import br.com.poolals.model.request.EmployeeRequest;
-import br.com.poolals.model.request.EmployeeRequestPageable;
-import br.com.poolals.model.response.EmployeeResponse;
-import br.com.poolals.repository.EmployeeRepository;
+import br.com.poolals.employee.mock.EmployeeMock;
+import br.com.poolals.employee.mock.EmployeeRequestMock;
+import br.com.poolals.employee.mock.EmployeeRequestPageableMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,16 +14,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -63,19 +50,6 @@ public class EmployeeServiceTest {
         Page<EmployeeResponse> allEmployees = employeeService.getAllEmployees(employeeRequestPageable);
 
         assertNotNull(allEmployees);
-    }
-
-    @Test
-    public void getAllEmployees_WhenNewValuePageInRequest_ExpectedThisNewValueInResponse() {
-        EmployeeRequestPageable employeeRequestPageable = EmployeeRequestPageableMock.validEmployeeRequestPageable();
-        employeeRequestPageable.setPage(10);
-
-        Page<Employee> pagedResponse = new PageImpl<>(Collections.singletonList(EmployeeMock.validEmployee()));
-        when(employeeRepository.findAll(any(Pageable.class))).thenReturn(pagedResponse);
-
-        Page<EmployeeResponse> allEmployees = employeeService.getAllEmployees(employeeRequestPageable);
-
-//        assertEquals(employeeRequestPageable.getPage().intValue(), allEmployees.getSize());
     }
 
     @Test

@@ -1,4 +1,4 @@
-package br.com.poolals.exception;
+package br.com.poolals.employee;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -1,14 +1,7 @@
-package br.com.poolals.service;
+package br.com.poolals.employee;
 
-import br.com.poolals.entity.Employee;
 import br.com.poolals.enums.SortDirection;
 import br.com.poolals.enums.SortField;
-import br.com.poolals.exception.EmployeeAlreadyExistException;
-import br.com.poolals.exception.EmployeeNotFoundException;
-import br.com.poolals.model.request.EmployeeRequest;
-import br.com.poolals.model.request.EmployeeRequestPageable;
-import br.com.poolals.model.response.EmployeeResponse;
-import br.com.poolals.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;

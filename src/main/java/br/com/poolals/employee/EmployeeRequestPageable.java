@@ -1,4 +1,4 @@
-package br.com.poolals.model.request;
+package br.com.poolals.employee;
 
 import br.com.poolals.enums.SortDirection;
 import br.com.poolals.enums.SortField;

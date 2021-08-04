@@ -1,6 +1,5 @@
-package br.com.poolals.repository;
+package br.com.poolals.employee;
 
-import br.com.poolals.entity.Employee;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

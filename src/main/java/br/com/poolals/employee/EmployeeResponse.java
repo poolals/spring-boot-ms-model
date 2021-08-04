@@ -1,4 +1,4 @@
-package br.com.poolals.model.response;
+package br.com.poolals.employee;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

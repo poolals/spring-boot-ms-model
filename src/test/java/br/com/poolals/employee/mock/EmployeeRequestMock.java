@@ -1,6 +1,6 @@
-package br.com.poolals.mock;
+package br.com.poolals.employee.mock;
 
-import br.com.poolals.model.request.EmployeeRequest;
+import br.com.poolals.employee.EmployeeRequest;
 
 public final class EmployeeRequestMock {
 

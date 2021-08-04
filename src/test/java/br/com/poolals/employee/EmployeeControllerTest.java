@@ -1,8 +1,6 @@
-package br.com.poolals.controller;
+package br.com.poolals.employee;
 
 import br.com.poolals.SpringBootMsModelApplication;
-import br.com.poolals.exception.EmployeeNotFoundException;
-import br.com.poolals.service.EmployeeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
