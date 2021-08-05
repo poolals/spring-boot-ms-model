@@ -5,7 +5,6 @@ import br.com.poolals.product.mock.ProductRequestMock;
 import br.com.poolals.product.mock.ProductResponseMock;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,7 +21,10 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Objects;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -58,6 +60,7 @@ public class ProductControllerTest {
 
         // Assert
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult.getResponse().getStatus());
+        verify(productService, times(0)).create(any(ProductRequest.class));
     }
 
     @Test
@@ -73,6 +76,7 @@ public class ProductControllerTest {
                 .andReturn();
 
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult.getResponse().getStatus());
+        verify(productService, times(0)).create(any(ProductRequest.class));
     }
 
     @Test
@@ -88,6 +92,7 @@ public class ProductControllerTest {
                 .andReturn();
 
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult.getResponse().getStatus());
+        verify(productService, times(0)).create(any(ProductRequest.class));
     }
 
     @Test
@@ -103,12 +108,14 @@ public class ProductControllerTest {
                 .andReturn();
 
         Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult.getResponse().getStatus());
+        verify(productService, times(0)).create(any(ProductRequest.class));
     }
 
     @Test
     public void createProduct_WhenRequestValid_ExpectedProductReponse() throws Exception {
         ProductRequest productRequest = ProductRequestMock.validRequest();
-        when(productService.create(productRequest)).thenReturn(ProductResponseMock.validResponse());
+        ProductResponse productResponse = ProductResponseMock.validResponse();
+        when(productService.create(productRequest)).thenReturn(productResponse);
 
         MvcResult mvcResult = mockMvc.perform(post(PRODUCT_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,8 +125,8 @@ public class ProductControllerTest {
                 .andReturn();
 
         Assert.assertEquals(HttpStatus.CREATED.value(), mvcResult.getResponse().getStatus());
-        Assert.assertTrue(Objects.requireNonNull(mvcResult.getResponse().getHeader("location"))
-                .contains(PRODUCT_BASE_URL));
+        Assert.assertTrue(Objects.requireNonNull(mvcResult.getResponse().getHeader("location")).contains(PRODUCT_BASE_URL));
+        Assert.assertEquals(convertObjectToJsonString(productResponse), mvcResult.getResponse().getContentAsString());
     }
 
     @Test
@@ -140,8 +147,7 @@ public class ProductControllerTest {
     private String convertObjectToJsonString(Object templateOrder) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
-        return ow.writeValueAsString(templateOrder);
+        return mapper.writeValueAsString(templateOrder);
     }
 
 }
