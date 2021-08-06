@@ -6,6 +6,7 @@ import br.com.poolals.product.mock.ProductResponseMock;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.jayway.jsonpath.JsonPath;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,15 +20,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -132,7 +140,7 @@ public class ProductControllerTest {
     @Test
     public void createProduct_WhenProductAlreadyExist_ExpectedException() throws Exception {
         ProductRequest productRequest = ProductRequestMock.validRequest();
-        doThrow(AlreadyExistException.class).when(productService).create(productRequest);
+        doThrow(ProductAlreadyExistException.class).when(productService).create(productRequest);
 
         MvcResult mvcResult = mockMvc.perform(post(PRODUCT_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -142,6 +150,37 @@ public class ProductControllerTest {
                 .andReturn();
 
         Assert.assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), mvcResult.getResponse().getStatus());
+    }
+
+    @Test
+    public void listProducts_WhenThereAreNoRegisteredProducts_ExpectedException() throws Exception {
+        doThrow(ProductNotFoundException.class).when(productService).list();
+
+        MvcResult mvcResult = mockMvc.perform(get(PRODUCT_BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn();
+
+        Assert.assertEquals(HttpStatus.NOT_FOUND.value(), mvcResult.getResponse().getStatus());
+        verify(productService, times(1)).list();
+    }
+
+    @Test
+    public void listProducts_WhenThereAreRegisteredProducts_ExpectedListOfProducts() throws Exception {
+        List<ProductResponse> productResponses = Collections.singletonList(ProductResponseMock.validResponse());
+        when(productService.list()).thenReturn(productResponses);
+
+        MvcResult mvcResult = mockMvc.perform(get(PRODUCT_BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn();
+
+        Assert.assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
+        int responseSizeList = JsonPath.parse(mvcResult.getResponse().getContentAsString()).read("$..json.length()");
+        Assert.assertEquals(productResponses.size(), responseSizeList);
+        verify(productService, times(1)).list();
     }
 
     private String convertObjectToJsonString(Object templateOrder) throws JsonProcessingException {
