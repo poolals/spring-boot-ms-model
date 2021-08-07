@@ -7,7 +7,7 @@ POST - http://localhost:9080/spring-boot-ms-model/v1/products
 
 Json Body 
 {
-    "productNumber": null,
+    "productNumber": 9,
     "name": "Celular" 
 }
 ```
