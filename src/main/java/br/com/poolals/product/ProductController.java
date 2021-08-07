@@ -1,9 +1,9 @@
 package br.com.poolals.product;
 
 import io.swagger.annotations.Api;
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,12 +13,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 
+@SuppressWarnings("unused")
 @RestController
 @RequestMapping("/v1/products")
 @Api(value = "Product Management System")
 @RequiredArgsConstructor
+@Validated
 public class ProductController {
 
     private final ProductService productService;
@@ -35,11 +36,11 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> listProducts() {
-        List<ProductResponse> productsResponse = productService.list();
+    public ResponseEntity<PageableResponse<ProductResponse>> listProducts(
+            @Valid PageableRequest pageableRequest) {
+        PageableResponse<ProductResponse> productsResponse = productService.list(pageableRequest);
 
         return ResponseEntity.ok().body(productsResponse);
     }
-
 
 }

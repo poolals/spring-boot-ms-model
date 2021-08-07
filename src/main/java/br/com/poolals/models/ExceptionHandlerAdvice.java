@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,13 +15,16 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 @Slf4j
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
 
+    public static final String EXCEPTION_MESSAGE = "Exception {}, Message: {}";
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorDTO> handlerMethodArgumentNotValid(MethodArgumentNotValidException exception) {
-        log.error("Exception {}, Message: {}", exception.getClass().getName(), exception.getMessage());
+    public ResponseEntity<ApiErrorDTO> handlerMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        log.error(EXCEPTION_MESSAGE, exception.getClass().getName(), exception.getMessage());
 
         Set<ErrorDTO> errors = exception.getBindingResult()
                 .getFieldErrors()
@@ -31,9 +35,22 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseErrorBuilder(HttpStatus.BAD_REQUEST, errors));
     }
 
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiErrorDTO> handlerBindException(BindException exception) {
+        log.error(EXCEPTION_MESSAGE, exception.getClass().getName(), exception.getMessage());
+
+        Set<ErrorDTO> errors = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> buildError(StringUtils.capitalize(error.getField()), error.getDefaultMessage()))
+                .collect(Collectors.toSet());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(baseErrorBuilder(HttpStatus.BAD_REQUEST, errors));
+    }
+
     @ExceptionHandler(ProductAlreadyExistException.class)
-    public ResponseEntity<ApiErrorDTO> handlerMethodArgumentNotValid(ProductAlreadyExistException exception) {
-        log.error("Exception {}, Message: {}", exception.getClass().getName(), exception.getMessage());
+    public ResponseEntity<ApiErrorDTO> handlerAlreadyExistException(ProductAlreadyExistException exception) {
+        log.error(EXCEPTION_MESSAGE, exception.getClass().getName(), exception.getMessage());
 
         String paramter = exception.getClass().getPackageName().substring(exception.getClass().getPackageName().lastIndexOf('.') + 1);
         ErrorDTO error = buildError(StringUtils.capitalize(paramter), exception.getMessage());
@@ -44,8 +61,8 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ApiErrorDTO> handlerMethodArgumentNotValid(ProductNotFoundException exception) {
-        log.error("Exception {}, Message: {}", exception.getClass().getName(), exception.getMessage());
+    public ResponseEntity<ApiErrorDTO> handlerNotFoundException(ProductNotFoundException exception) {
+        log.error(EXCEPTION_MESSAGE, exception.getClass().getName(), exception.getMessage());
 
         String paramter = exception.getClass().getPackageName().substring(exception.getClass().getPackageName().lastIndexOf('.') + 1);
         ErrorDTO error = buildError(StringUtils.capitalize(paramter), exception.getMessage());

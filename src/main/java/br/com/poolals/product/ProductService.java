@@ -3,10 +3,10 @@ package br.com.poolals.product;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @AllArgsConstructor
@@ -28,15 +28,15 @@ public class ProductService {
         return mapper.map(save, ProductResponse.class);
     }
 
-    public List<ProductResponse> list() {
-        List<Product> products = productRepositoy.findAll();
+    public PageableResponse<ProductResponse> list(PageableRequest request) {
+        Pageable pagingPageable = PageRequest.of(request.getPage(), request.getSize());
+
+        Page<Product> products = productRepositoy.findAll(pagingPageable);
         if (products.isEmpty()) {
-            throw new ProductNotFoundException("Product already exist with product number");
+            throw new ProductNotFoundException("Product not founded");
         }
 
-        List<ProductResponse> productResponses = new ArrayList<>();
-        products.forEach(product -> productResponses.add(mapper.map(product, ProductResponse.class)));
-
-        return productResponses;
+        return new PageableResponse<>(products);
     }
+
 }

@@ -1,6 +1,8 @@
 package br.com.poolals.product;
 
 import br.com.poolals.SpringBootMsModelApplication;
+import br.com.poolals.product.mock.PageableRequestMock;
+import br.com.poolals.product.mock.PageableResponseMock;
 import br.com.poolals.product.mock.ProductRequestMock;
 import br.com.poolals.product.mock.ProductResponseMock;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,22 +23,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.converter.json.Jackson2ObjectMapperBuilder.json;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         classes = SpringBootMsModelApplication.class)
@@ -154,33 +153,75 @@ public class ProductControllerTest {
 
     @Test
     public void listProducts_WhenThereAreNoRegisteredProducts_ExpectedException() throws Exception {
-        doThrow(ProductNotFoundException.class).when(productService).list();
+        PageableRequest pageableRequest = PageableRequestMock.validRequest();
+        doThrow(ProductNotFoundException.class).when(productService).list(any());
 
         MvcResult mvcResult = mockMvc.perform(get(PRODUCT_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", String.valueOf(pageableRequest.getPage()))
+                        .param("size", String.valueOf(pageableRequest.getSize()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andReturn();
 
         Assert.assertEquals(HttpStatus.NOT_FOUND.value(), mvcResult.getResponse().getStatus());
-        verify(productService, times(1)).list();
+        verify(productService, times(1)).list(any());
     }
 
     @Test
     public void listProducts_WhenThereAreRegisteredProducts_ExpectedListOfProducts() throws Exception {
-        List<ProductResponse> productResponses = Collections.singletonList(ProductResponseMock.validResponse());
-        when(productService.list()).thenReturn(productResponses);
+        List<ProductResponse> productResponses = Arrays.asList(ProductResponseMock.validResponse(), ProductResponseMock.validResponse());
+        PageableResponse pageableResponses = PageableResponseMock.validPageableReponse();
+        pageableResponses.setData(productResponses);
+        PageableRequest pageableRequest = PageableRequestMock.validRequest();
+        when(productService.list(any())).thenReturn(pageableResponses);
 
         MvcResult mvcResult = mockMvc.perform(get(PRODUCT_BASE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", String.valueOf(pageableRequest.getPage()))
+                        .param("size", String.valueOf(pageableRequest.getSize()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andReturn();
 
         Assert.assertEquals(HttpStatus.OK.value(), mvcResult.getResponse().getStatus());
-        int responseSizeList = JsonPath.parse(mvcResult.getResponse().getContentAsString()).read("$..json.length()");
+        int responseSizeList = JsonPath.parse(mvcResult.getResponse().getContentAsString()).read("$.data.length()");
         Assert.assertEquals(productResponses.size(), responseSizeList);
-        verify(productService, times(1)).list();
+        verify(productService, times(1)).list(any());
+    }
+
+    @Test
+    public void listProducts_WhenPageIsLessThanZero_ExpectedException() throws Exception {
+        PageableRequest pageableRequest = PageableRequestMock.validRequest();
+        pageableRequest.setPage(-1);
+
+        MvcResult mvcResult = mockMvc.perform(get(PRODUCT_BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", String.valueOf(pageableRequest.getPage()))
+                        .param("size", String.valueOf(pageableRequest.getSize()))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn();
+
+        Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult.getResponse().getStatus());
+        verify(productService, times(0)).list(any(PageableRequest.class));
+    }
+
+    @Test
+    public void listProducts_WhenPageIsLessThanOne_ExpectedException() throws Exception {
+        PageableRequest pageableRequest = PageableRequestMock.validRequest();
+        pageableRequest.setSize(-1);
+
+        MvcResult mvcResult = mockMvc.perform(get(PRODUCT_BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("page", String.valueOf(pageableRequest.getPage()))
+                        .param("size", String.valueOf(pageableRequest.getSize()))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andReturn();
+
+        Assert.assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult.getResponse().getStatus());
+        verify(productService, times(0)).list(any(PageableRequest.class));
     }
 
     private String convertObjectToJsonString(Object templateOrder) throws JsonProcessingException {
