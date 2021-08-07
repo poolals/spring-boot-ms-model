@@ -4,6 +4,12 @@
 
 ```
 POST - http://localhost:9080/spring-boot-ms-model/v1/products
+
+Json Body 
+{
+    "productNumber": null,
+    "name": "Celular" 
+}
 ```
 
 - add new product
