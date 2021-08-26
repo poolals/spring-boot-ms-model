@@ -15,8 +15,8 @@ import java.util.Set;
 public class ApiErrorDTO {
 
     private Date timestamp;
-    private Integer status;
-    private String code;
+    private Integer code;
+    private String status;
     private Set<ErrorDTO> errors;
 
 }
